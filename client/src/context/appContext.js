@@ -8,7 +8,10 @@ import {
     SETUP_USER_SUCCESS,
     SETUP_USER_ERROR,
     TOGGLE_SIDEBAR,
-    LOGOUT_USER 
+    LOGOUT_USER,
+    UPDATE_USER_BEGIN,
+    UPDATE_USER_SUCCESS,
+    UPDATE_USER_ERROR, 
 } from './actions';
 
 const user = localStorage.getItem('user')
@@ -31,7 +34,28 @@ const AppContext = React.createContext()
 
 const AppProvider = ({children}) => {
     const [state, dispatch] = useReducer(reducer, initialState)
+
+    const authFetch = axios.create({
+        baseURL: '/api/v1/auth'   
+    }) 
     
+    authFetch.interceptors.request.use(function (config) {
+        config.headers['Authorization'] =  `Bearer ${state.token}`
+        return config;
+      }, function (error) {
+        return Promise.reject(error);
+      });
+    
+    authFetch.interceptors.response.use(function (response) {
+        return response;
+      }, function (error) {
+          console.log(error.response)
+          if(error.response.status === 401){
+            logoutUser()
+          }
+        return Promise.reject(error);
+      });
+
     const displayAlert = () => {
         dispatch({type: DISPLAY_ALERT})
         clearAlert()
@@ -83,6 +107,24 @@ const AppProvider = ({children}) => {
         dispatch({type: TOGGLE_SIDEBAR})
     }
 
+    const updateUser = async (currentUser) => {
+        dispatch({type: UPDATE_USER_BEGIN})
+        try {
+            const {data} = await authFetch.patch('/updateUser', currentUser)
+            const {user, token, location} = data
+            dispatch({type: UPDATE_USER_SUCCESS, payload: {user, token, location}})
+            addUserToLocalStorage({user, token, location})
+        } catch (error) {
+            if(error.response.status !== 401){
+                dispatch({
+                    type: UPDATE_USER_ERROR,
+                    payload: {msg:error.response.data.msg} 
+                })
+            }
+        }
+        clearAlert()
+    }
+
      return (
         <AppContext.Provider value={
             {...state, 
@@ -90,7 +132,8 @@ const AppProvider = ({children}) => {
             clearAlert,
             setupUser,
             toggleSidebar,
-            logoutUser
+            logoutUser,
+            updateUser
             }}>
             {children}
         </AppContext.Provider>
