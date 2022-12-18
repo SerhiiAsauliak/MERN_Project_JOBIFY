@@ -10,9 +10,9 @@ function App() {
           <ProtectedRoute>
             <SharedLayout/>
           </ProtectedRoute>
-        }>
+          }>
           <Route index="stats" element={<Stats/>}/>
-          <Route path="all-job" element={<AllJob/>}/>
+          <Route path="all-jobs" element={<AllJob/>}/>
           <Route path="add-job" element={<AddJob/>}/>
           <Route path="profile" element={<Profile/>}/>
         </Route>
