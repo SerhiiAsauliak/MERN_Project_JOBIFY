@@ -17,6 +17,8 @@ import {
     CREATE_JOB_BEGIN,
     CREATE_JOB_SUCCESS,
     CREATE_JOB_ERROR, 
+    GET_JOBS_BEGIN,
+    GET_JOBS_SUCCESS,
 } from './actions';
 
 const user = localStorage.getItem('user')
@@ -41,7 +43,12 @@ const initialState = {
     jobTypeOptions: ['full-time', 'part-time', 'remote', 'internship'],
     jobType: 'full-time',
     statusOptions: ['interview', 'declined', 'pending'],
-    status: 'pending'
+    status: 'pending',
+    
+    jobs: [],
+    totalJobs: 0,
+    numOfPages: 1,
+    page: 1,
 }
 
 const AppContext = React.createContext()
@@ -124,7 +131,7 @@ const AppProvider = ({children}) => {
     const updateUser = async (currentUser) => {
         dispatch({type: UPDATE_USER_BEGIN})
         try {
-            const {data} = await authFetch.patch('/updateUser', currentUser)
+            const {data} = await authFetch.patch('/auth/updateUser', currentUser)
             const {user, token, location} = data
             dispatch({type: UPDATE_USER_SUCCESS, payload: {user, token, location}})
             addUserToLocalStorage({user, token, location})
@@ -145,6 +152,21 @@ const AppProvider = ({children}) => {
 
     const clearValues = () => {
         dispatch({type: CLEAR_VALUES})
+    }
+
+    const getJobs = async () => {
+        let url = '/jobs'
+        dispatch({type: GET_JOBS_BEGIN})
+        try {
+            const {data} = await authFetch(url)
+            const {jobs, totalJobs, numOfPages} = data
+            dispatch({type: GET_JOBS_SUCCESS, payload: {jobs, totalJobs, numOfPages}})
+            // dispatch({type: CLEAR_VALUES})
+        } catch (error) {
+            console.log(error.response)
+            // logoutUser()
+        }
+        clearAlert()
     }
 
     const createJob = async () => {
@@ -177,7 +199,8 @@ const AppProvider = ({children}) => {
             updateUser,
             handleChange,
             clearValues,
-            createJob
+            createJob,
+            getJobs
             }}>
             {children}
         </AppContext.Provider>
