@@ -7,10 +7,6 @@ const AllJob = () => {
     <>
       <SearchContainer/>
       <JobsContainer/>
-      <button 
-        className="btn">
-          CLick
-      </button>
     </>
   )
 }
