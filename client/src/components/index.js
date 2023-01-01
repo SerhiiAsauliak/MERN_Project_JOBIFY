@@ -9,6 +9,8 @@ import SearchContainer from './JobsContainer';
 import StatsContainer from './StatsContainer';
 import ChartsContainer from './ChartsContainer';
 import Loading from './Loading';
+import BarChartComponent from './BarChart';
+import AreaChartComponent from './AreaChart';
 
 export {
     Logo,
@@ -21,5 +23,7 @@ export {
     SearchContainer,
     StatsContainer,
     ChartsContainer,
-    Loading
+    Loading,
+    BarChartComponent,
+    AreaChartComponent
 }
