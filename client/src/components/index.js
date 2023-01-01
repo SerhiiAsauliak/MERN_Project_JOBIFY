@@ -11,10 +11,11 @@ import ChartsContainer from './ChartsContainer';
 import Loading from './Loading';
 import BarChartComponent from './BarChart';
 import AreaChartComponent from './AreaChart';
-
+import FormRowSelect from './FormRowSelect';
 export {
     Logo,
     FormRow,
+    FormRowSelect,
     Alert,
     SmallSidebar,
     BigSidebar,

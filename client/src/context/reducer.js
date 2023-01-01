@@ -24,6 +24,7 @@ import {
     EDIT_JOB_ERROR,
     SHOW_STATS_BEGIN,
     SHOW_STATS_SUCCESS,
+    CLEAR_FILTERS
 } from './actions';
 
 const reducer = (state, action) => {
@@ -215,6 +216,7 @@ const reducer = (state, action) => {
     if (action.type === SHOW_STATS_BEGIN) {
         return { ...state, isLoading: true, showAlert: false };
     }
+
     if (action.type === SHOW_STATS_SUCCESS) {
         return {
             ...state,
@@ -222,6 +224,14 @@ const reducer = (state, action) => {
             monthlyApplications: action.payload.monthlyApplications,
             stats: action.payload.stats,
         };
+    }
+
+    if (action.type === CLEAR_FILTERS) {
+        return { ...state, 
+                search: '',
+                searchStatus: 'all',
+                searchType: 'all',
+                sort: 'latest', }
     }
 
     throw new Error(`no such action: ${action.type}`)
