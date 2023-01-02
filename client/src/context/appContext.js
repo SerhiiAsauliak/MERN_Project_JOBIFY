@@ -27,7 +27,8 @@ import {
     SHOW_STATS_BEGIN,
     SHOW_STATS_SUCCESS,
     CLEAR_FILTERS,
-    CHANGE_PAGE
+    CHANGE_PAGE,
+    DELETE_JOB_ERROR
 } from './actions';
 
 const user = localStorage.getItem('user')
@@ -243,8 +244,13 @@ const AppProvider = ({ children }) => {
             await authFetch.delete(`/jobs/${jobId}`)
             getJobs()
         } catch (error) {
-            logoutUser()
+            if (error.response.status === 401) return;
+            dispatch({
+            type: DELETE_JOB_ERROR,
+            payload: { msg: error.response.data.msg },
+            });
         }
+       clearAlert()
     }
 
     const showStats = async () => {

@@ -8,7 +8,6 @@ const SearchContainer = () => {
 
   const {
     isLoading,
-    search,
     searchStatus,
     searchType,
     sort,
