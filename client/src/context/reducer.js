@@ -27,6 +27,8 @@ import {
     SHOW_STATS_SUCCESS,
     CLEAR_FILTERS,
     CHANGE_PAGE,
+    GET_CURRENT_USER_BEGIN,
+    GET_CURRENT_USER_SUCCESS,
 } from './actions';
 
 const reducer = (state, action) => {
@@ -57,7 +59,6 @@ const reducer = (state, action) => {
             ...state,
             isLoading: false,
             user: action.payload.user,
-            token: action.payload.token,
             userLocation: action.payload.location,
             jobLocation: action.payload.location,
             showAlert: true,
@@ -85,7 +86,6 @@ const reducer = (state, action) => {
             ...state,
             isLoading: false,
             user: action.payload.user,
-            token: action.payload.token,
             userLocation: action.payload.location,
             jobLocation: action.payload.location,
             showAlert: true,
@@ -111,10 +111,7 @@ const reducer = (state, action) => {
     if (action.type === LOGOUT_USER) {
         return {
             ...initialState,
-            user: null,
-            token: null,
-            userLocation: '',
-            jobLocation: '',
+            userLoading: false,
         }
     }
     if (action.type === HANDLE_CHANGE) {
@@ -139,7 +136,6 @@ const reducer = (state, action) => {
             ...initialState
         }
     }
-
     if (action.type === CREATE_JOB_BEGIN) {
         return { ...state, isLoading: true }
     }
@@ -161,7 +157,6 @@ const reducer = (state, action) => {
             alertText: action.payload.msg
         }
     }
-
     if (action.type === GET_JOBS_BEGIN) {
         return { ...state, isLoading: true, showAlert: false }
     }
@@ -174,7 +169,6 @@ const reducer = (state, action) => {
             totalJobs: action.payload.totalJobs,
         }
     }
-
     if (action.type === SET_EDIT_JOB) {
         const job = state.jobs.find((job) => job._id === action.payload.id)
         const { _id, position, company, jobLocation, jobType, status } = job
@@ -189,7 +183,6 @@ const reducer = (state, action) => {
             status,
         }
     }
-
     if (action.type === DELETE_JOB_BEGIN) {
         return { ...state, isLoading: true }
     }
@@ -202,7 +195,6 @@ const reducer = (state, action) => {
             alertText: action.payload.msg,
         };
     }
-
     if (action.type === EDIT_JOB_BEGIN) {
         return { ...state, isLoading: true };
     }
@@ -224,11 +216,9 @@ const reducer = (state, action) => {
             alertText: action.payload.msg,
         };
     }
-
     if (action.type === SHOW_STATS_BEGIN) {
         return { ...state, isLoading: true, showAlert: false };
     }
-
     if (action.type === SHOW_STATS_SUCCESS) {
         return {
             ...state,
@@ -237,7 +227,6 @@ const reducer = (state, action) => {
             stats: action.payload.stats,
         };
     }
-
     if (action.type === CLEAR_FILTERS) {
         return { ...state, 
                 search: '',
@@ -245,9 +234,24 @@ const reducer = (state, action) => {
                 searchType: 'all',
                 sort: 'latest', }
     }
-
     if (action.type === CHANGE_PAGE) {
         return { ...state, page: action.payload.page };
+    }
+
+    if (action.type === GET_CURRENT_USER_BEGIN) {
+        return { ...state, 
+                userLoading: true, 
+                showAlert: false
+            };
+    }
+    if (action.type === GET_CURRENT_USER_SUCCESS) {
+        return {
+            ...state,
+            userLoading: false,
+            user: action.payload.user,
+            userLocation: action.payload.location,
+            jobLocation: action.payload.location,
+        };
     }
 
     throw new Error(`no such action: ${action.type}`)

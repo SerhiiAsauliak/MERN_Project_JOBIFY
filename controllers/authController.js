@@ -1,6 +1,7 @@
 import { StatusCodes } from 'http-status-codes';
 import User from "../model/User.js"
 import {BadRequestError, UnauthenticatedError} from './../errors/index.js';
+import attachCookies from './../utils/attachCookies.js';
 
 const register = async (req, res) => {
     const {name, password, email} = req.body
@@ -17,6 +18,8 @@ const register = async (req, res) => {
 
     const user = await User.create({name, password, email})
     const token = user.createJWT()
+    attachCookies({res, token})
+
     res.status(StatusCodes.CREATED)
         .json({
             user:{
@@ -25,7 +28,6 @@ const register = async (req, res) => {
                 location:user.location,
                 name:user.name,
             }, 
-            token,
             location: user.location})
 }
 
@@ -44,8 +46,10 @@ const login = async (req, res) => {
         throw new UnauthenticatedError('Invalid Credentials')
     }
     const token = user.createJWT()
+    attachCookies({res, token})
+
     user.password = undefined  //remove password from client response
-    res.status(StatusCodes.OK).json({user, token, location: user.location})
+    res.status(StatusCodes.OK).json({user, location: user.location})
 }
 
 const updateUser = async (req, res) => {
@@ -62,8 +66,22 @@ const updateUser = async (req, res) => {
 
     await user.save()
     const token = user.createJWT()
-    res.status(StatusCodes.OK).json({user, token, location: user.location})
+    attachCookies({res, token})
+
+    res.status(StatusCodes.OK).json({user, location: user.location})
 }
 
+const getCurrentUser = async (req, res) => {
+    const user = await User.findOne({_id: req.user.userId})
+    res.status(StatusCodes.OK).json({user, location: user.location})
+}
 
-export {register, login, updateUser}
+const logout = async (req, res) => {
+    res.cookie('token', 'logout', {
+        httpOnly: true,
+        expires: new Date(Date.now())
+    })
+    res.status(StatusCodes.OK).json({msg: 'user logged out...'})
+}
+
+export {register, login, updateUser, getCurrentUser, logout}

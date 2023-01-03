@@ -7,6 +7,8 @@ import dotenv from 'dotenv'
 dotenv.config()
 import morgan from 'morgan'
 
+import cookieParser from 'cookie-parser'
+
 import { dirname } from 'path'
 import { fileURLToPath } from 'url'
 import path from 'path'
@@ -30,6 +32,7 @@ if(process.env.NODE_ENV !== 'production'){
 }
 
 app.use(express.json())
+app.use(cookieParser())
 app.use(helmet())
 app.use(xss())
 app.use(mongoSanitize())
